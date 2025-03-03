@@ -1,10 +1,12 @@
 # Black9
 
-# Clasificación de Reglas
+## Wazuh
 
-[Clasificación](https://documentation.wazuh.com/current/user-manual/ruleset/rules/rules-classification.html)
+### [Clasificación de Reglas](https://documentation.wazuh.com/current/user-manual/ruleset/rules/rules-classification.html)
 
 ## WatchGuard
+
+### [ID's de logs de WatchGuard](https://www.watchguard.com/help/docs/fireware/12/en-US/log_catalog/Log-Catalog_v12_6.pdf)
 
 ```xml
   <!-- Normal denied traffic -->
