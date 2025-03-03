@@ -2,12 +2,13 @@
 
 ## Wazuh
 
-### [Clasificación de Reglas](https://documentation.wazuh.com/current/user-manual/ruleset/rules/rules-classification.html)
+[Clasificación de Reglas](https://documentation.wazuh.com/current/user-manual/ruleset/rules/rules-classification.html)
 
 ## WatchGuard
 
-### [ID's de logs de WatchGuard](https://www.watchguard.com/help/docs/fireware/12/en-US/log_catalog/Log-Catalog_v12_6.pdf)
 
+[ID's de logs de WatchGuard](https://www.watchguard.com/help/docs/fireware/12/en-US/log_catalog/Log-Catalog_v12_6.pdf)
+### Comentado
 ```xml
   <!-- Normal denied traffic -->
   <rule id="150062" level="5">
@@ -177,4 +178,16 @@ Apr 15 12:10:53 FW-125852 FVE1032175935 firewall: msg_id="3000-0148" Allow Trust
 
 En este caso no parecen generarse alertas con tráfico legítimo en cantidades destacables, con lo que no considero necesario cambiar el límite de tamaño de paquetes. Pero si se desea, se puede cambiar el nivel de la alerta para que no muestre nada, o se muestre en un nivel menor, y crear otra alerta con este nivel o mayor. Además, no es correcta la descripción de tunnel attack. Simplemente están detectándose paquetes que podrían contener payloads maliciosos. Puede tratarse de un tunnel, un ataque de amplificación NTP.
 
+## Sin comentar
+```xml
+  <!-- denied IPS Traffic -->
+  <rule id="150066" level="6">
+    <if_sid>150000</if_sid>
+    <id>3000-0150</id>
+    <action type="pcre2">[Dd]eny</action>
+    <description>Watchguard: App control: $(action) $(src) $(dst) packetlen=$(packetlen) $(protocol) iphlen=$(iphlen) ttl=$(ttl) from $(srcip):$(srcport) to $(dstip):$(dstport) - $(reason)</description>
+    <group>packet_filter,packet_filter_deny,ips</group>
+  </rule>
+```
+Es incorrecto lo de "App Control", esta alerta es generada cuando el IPS detecta un ataque y lo deniega. El nivel 6 es adecuado.
 
