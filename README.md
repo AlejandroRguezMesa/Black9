@@ -242,10 +242,10 @@ Para solventar esto, se debe crear un decoder específico a IPS que sea interpre
     <group>ips,ddos,denied_traffic,packet_filter,pci_dss_10.6.1,gpg13_4.12,gdpr_IV_35.7.d,tsc_CC7.2,tsc_CC7.3,</group>
   </rule>
 
+
+```
+
 ## Eliminar indices
 
 
 ## Logrotate
-
-
-```
