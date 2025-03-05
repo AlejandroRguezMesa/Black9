@@ -189,5 +189,58 @@ En este caso no parecen generarse alertas con tráfico legítimo en cantidades d
     <group>packet_filter,packet_filter_deny,ips</group>
   </rule>
 ```
-Es incorrecto lo de "App Control", esta alerta es generada cuando el IPS detecta un ataque y lo deniega. El nivel 6 es adecuado.
+Es incorrecto lo de "App Control", esta alerta es generada cuando el IPS detecta un ataque y lo deniega. El nivel 6 es adecuado, pero la descripción de la alerta, y los decoders aplicados a ella son deficientes. 
 
+![image](https://github.com/user-attachments/assets/ec7433a0-639b-4fe9-865d-1c5dcf3cf229)
+
+![image](https://github.com/user-attachments/assets/6b9a6844-12f2-4212-aece-7e768f1c514b)
+
+Como se puede ver en la descripción, hay campos vacíos y otros incorrectos, esto se debe a que los logs desencadenads por detecciones IPS, no están contemplados correctamente en los decoders generales definidos.
+
+Para solventar esto, se debe crear un decoder específico a IPS que sea interpretado antes que los generales cuando el msg_id corresponda a logs de IPS. Sería algo así:
+
+**Decoder**
+```xml
+<decoder name="watchguard-firebox-ips">
+    <parent>watchguard-firebox-firewall</parent>
+    <prematch>firewall: msg_id="3000-0150"</prematch>
+</decoder>
+
+<decoder name="watchguard-firebox-ips-info">
+    <parent>watchguard-firebox-ips</parent>
+    <regex type="pcre2" offset="after_parent">(\bDeny\b|\bAllow\b)\s+([\d\w-]+)\s+([\d\w-]+)\s+(\d+)\s+(\w+)\s+\d+\s+\d+\s+([\d.]+)\s+([\d.]+)\s+(\d+)\s+(\d+).*signature_name="([^"]+)"\s+signature_cat="([^"]+)"\s+signature_id="([^"]+)"\s+severity="(\d+)"\s+sig_vers="([^"]+)"</regex>
+    <order>action, src, dst, packetlen, protocol, srcip, dstip, srcport, dstport, signature_name, signature_cat, signature_id, severity, sig_vers</order>
+</decoder>
+
+```
+
+**Reglas**
+````xml
+  <!-- IPS Traffic Detected - Allowed -->
+  <rule id="150065" level="5">
+    <if_sid>150000</if_sid>
+    <id>3000-0150</id>
+    <action type="pcre2">[Aa]llow</action>
+    <description>Watchguard: IPS detection: $(action) from $(srcip):$(srcport) to $(dstip):$(dstport) - Signature: $(signature_name) (Category: $(signature_cat), Severity: $(severity), Signature ID: $(signature_id), Version: $(sig_vers))</description>
+    <group>ips,allowed_traffic,packet_filter,pci_dss_10.6.1,gpg13_4.12,gdpr_IV_35.7.d,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+  <!-- IPS Traffic Detected - Denied -->
+  <rule id="150066" level="10">
+    <if_sid>150000</if_sid>
+    <id>3000-0150</id>
+    <action type="pcre2">[Dd]eny</action>
+    <description>Watchguard: IPS detection: $(action) from $(srcip):$(srcport) to $(dstip):$(dstport) - Signature: $(signature_name) (Category: $(signature_cat), Severity: $(severity), Signature ID: $(signature_id), Version: $(sig_vers))</description>
+    <group>ips,denied_traffic,packet_filter,pci_dss_10.6.1,gpg13_4.12,gdpr_IV_35.7.d,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+  <!-- Recidiving IPS Traffic - Possible Attack -->
+  <rule id="150067" level="14" frequency="10" timeframe="240" ignore="90">
+    <if_matched_sid>150066</if_matched_sid>
+    <same_srcip />
+    <description>Watchguard: Recurrent IPS detection: Recurring $(action) from $(srcip) targeting $(dstip) - Potential ongoing attack (Signature: $(signature_name), Severity: $(severity), Signature ID: $(signature_id))</description>
+    <group>ips,ddos,denied_traffic,packet_filter,pci_dss_10.6.1,gpg13_4.12,gdpr_IV_35.7.d,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+
+```
