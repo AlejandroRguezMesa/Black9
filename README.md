@@ -1,6 +1,3 @@
-![image](https://github.com/user-attachments/assets/2cd96e58-ae87-47ee-8ed1-591650a8a8e5)# Black9
-
-
 ## Wazuh
 
 [Clasificación de Reglas](https://documentation.wazuh.com/current/user-manual/ruleset/rules/rules-classification.html)
@@ -247,7 +244,19 @@ Para solventar esto, se debe crear un decoder específico a IPS que sea interpre
 
 ```
 
+
+
 ## Eliminar indices
 
 
 ## Logrotate
+
+
+## Script wazuh
+
+https://documentation.wazuh.com/current/user-manual/capabilities/active-response/index.html
+
+Referencia https://groups.google.com/g/wazuh/c/AVpQfQZJ2pI
+
+
+
