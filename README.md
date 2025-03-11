@@ -1,4 +1,5 @@
-# Black9
+![image](https://github.com/user-attachments/assets/2cd96e58-ae87-47ee-8ed1-591650a8a8e5)# Black9
+
 
 ## Wazuh
 
@@ -108,7 +109,8 @@ Generalmente los tunnel attacks o ataques de túnel se realizan desde una máqui
     <description>Watchguard: firewall: $(action) from $(srcip) to $(dstip) using protocol $(protocol) [icmp] packet size is bigger than usual: $(packetlen) (At least one public IP)</description>
 </rule>
 ```
-
+Resulta que la etiqueta field no se puede utilizar en [campos estáticos](https://documentation.wazuh.com/current/user-manual/ruleset/decoders/dynamic-fields.html) como srcip o dstip. Como alternativa hice uso de regex, que hereda las propiedades de match, incluyendo la posibilidad de añadir un negate. 
+![image](https://github.com/user-attachments/assets/3b20d0a3-9eee-43f4-aa79-ffdd2d7b8cc6)
 
 
 ```xml
