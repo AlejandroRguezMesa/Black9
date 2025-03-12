@@ -256,6 +256,10 @@ Para solventar esto, se debe crear un decoder específico a IPS que sea interpre
 
 https://documentation.wazuh.com/current/user-manual/capabilities/active-response/index.html
 
+Foro
+https://groups.google.com/g/wazuh/c/AVpQfQZJ2pI
+
+
 Referencia https://groups.google.com/g/wazuh/c/AVpQfQZJ2pI
 
 
