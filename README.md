@@ -214,7 +214,7 @@ Para solventar esto, se debe crear un decoder específico a IPS que sea interpre
 ```
 
 **Reglas**
-````xml
+```xml
   <!-- IPS Traffic Detected - Allowed -->
   <rule id="150065" level="5">
     <if_sid>150000</if_sid>
@@ -258,6 +258,27 @@ https://documentation.wazuh.com/current/user-manual/capabilities/active-response
 
 Foro
 https://groups.google.com/g/wazuh/c/AVpQfQZJ2pI
+
+
+## Depuración
+## Checkeo de logs en archives
+Como se ha visto anteriormente con IPS, los decoders y reglas no son son perfectos. Algunos decoders interpretan incorrectamente ciertos decoders, con lo que es necesario comprobar si todos los logs están siendo procesados. Al notar una falta de alertas generadas por reglas relacionadas al proxy, comprobé el logall en busca de logs no procesados, y efectivamente existen este tipo de logs sin procesar.
+
+Esto se debe a que hay logs como estos, 
+```
+2024 Dec 13 11:19:34 T85-FULP-HA1->80.28.208.242 Dec 13 11:19:34 T85-FULP-HA1 C03D05CBE2F65 T85-FULP-HA1 (2024-12-13T11:19:34) https-proxy[2915]: msg_id="2CFF-0000" Allow Wifi_invitados External tcp 192.168.90.30 216.58.209.74 33370 443 msg="HTTPS Request" proxy_act="Default-HTTPS-Client" tls_profile="TLS-Client-HTTPS.Standard" tls_version="TLS_V13" sni="optimizationguide-pa.googleapis.com" cn="" cert_issuer="" cert_subject="" action="allow" app_id="698" app_cat_id="19" app_name="Google APIs(SSL)" app_cat_name="Network protocols" sig_vers="18.346" sent_bytes="1915" rcvd_bytes="6771"  geo_dst="USA"  (HTTPS-proxy-00)
+```
+
+```bash
+cat ossec-archive-13.log | grep proxy | grep -vE ".*-proxy\[[0-9]*\]:\s.*" | grep -vE "firewall: msg_id=\".*\""
+2024 Dec 13 11:34:49 T85-FULP-HA1->80.28.208.242 Dec 13 11:34:49 T85-FULP-HA1 C03D05CBE2F65 T85-FULP-HA1 (2024-12-13T11:34:49) homer[2854]: action_proxy_report_cb() response: there is no new proxy report
+```
+
+
+
+
+## Creación de decoders y reglas para Proxy
+
 
 
 Referencia https://groups.google.com/g/wazuh/c/AVpQfQZJ2pI
